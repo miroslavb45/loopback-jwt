@@ -6,9 +6,9 @@ export { AppApplication };
 export async function main(options: ApplicationConfig = {}) {
   const app = new AppApplication({
     rest: {
-      port: 3000,
+      port: 3001,
       cors: {
-        origin: 'http://localhost:4200',
+        origin: 'https://devdevdev.tk',
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
         preflightContinue: false,
         optionsSuccessStatus: 204,
