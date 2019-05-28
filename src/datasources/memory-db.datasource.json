@@ -1,0 +1,6 @@
+{
+  "name": "memoryDB",
+  "connector": "memory",
+  "localStorage": "",
+  "file": ""
+}
