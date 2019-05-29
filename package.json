@@ -57,6 +57,7 @@
     "@loopback/rest": "^1.12.0",
     "@loopback/rest-explorer": "^1.1.23",
     "@loopback/service-proxy": "^1.1.11",
+    "bcrypt": "^3.0.6",
     "custom-env": "^1.0.1",
     "dotenv": "^8.0.0",
     "if-env": "^1.0.4",
