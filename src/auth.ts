@@ -29,6 +29,7 @@ import { HttpErrors, Request } from '@loopback/rest';
 // so we can supply empty param when calling this decorartor.
 // we will use 'secured' to match Spring Security annotation.
 export function secured(
+  // userId? number = 1,
   type: SecuredType = SecuredType.IS_AUTHENTICATED, // more on this below
   roles: string[] = [],
   strategy: string = 'jwt',
@@ -39,7 +40,7 @@ export function secured(
     type,
     roles,
     strategy,
-    options,
+    options
   });
 }
 
@@ -68,12 +69,14 @@ export class MyAuthMetadataProvider extends AuthMetadataProvider {
   }
 
   value(): MyAuthenticationMetadata | undefined {
+
     if (!this._controllerClass || !this._methodName) return;
+
     return MetadataInspector.getMethodMetadata<MyAuthenticationMetadata>(
       AUTHENTICATION_METADATA_KEY,
       this._controllerClass.prototype,
       this._methodName,
-    );
+    )
   }
 }
 
@@ -84,7 +87,12 @@ export const JWT_SECRET = "$ecret$AreÄlway$Br3akabl3";
 export interface Credentials {
   username: string;
   password: string;
+  first_name?: string;
+  last_name?: string;
+  date_of_birth?: Date;
+  email?: string;
 }
+
 
 // implement custom namespace bindings
 export namespace MyAuthBindings {
@@ -97,12 +105,16 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
     @inject(AuthenticationBindings.METADATA) private metadata: MyAuthenticationMetadata,
     @repository(UserRepository) private userRepository: UserRepository,
     @repository(UserRoleRepository) private userRoleRepository: UserRoleRepository,
-  ) { }
+  ) {
+
+    // console.log(this.metadata);
+  }
 
   value(): ValueOrPromise<Strategy | undefined> {
     if (!this.metadata) return;
 
-    const { strategy } = this.metadata;
+    const strategy = this.metadata.strategy;
+
     if (strategy === 'jwt') {
       return new JwtStrategy(
         {
@@ -113,10 +125,9 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
       );
     }
   }
-
+  // Extracts the token from request header
   TokenExtractor = function (req: any) {
-    console.log(req.headers)
-
+    let token = null;
     function getCookie(cname: string, cookie: any) {
       var name = cname + "=";
       var decodedCookie = decodeURIComponent(cookie);
@@ -132,29 +143,10 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
       }
       return "";
     }
-
-
-    const token = JSON.parse(getCookie("sessionID", req.headers.cookie)).token;
-
-    // if ((req.headers && req.headers.authorization) || (req.query && req.query.authorization)) {
-    //   if (req.headers.authorization)
-    //     var parts = req.headers.authorization.split(' ');
-    //   else if (req.query.authorization)
-    //     var parts = req.query.authorization.split(' ');
-
-    //   if (parts.length == 2) {
-    //     var scheme = parts[0],
-    //       credentials = parts[1];
-
-    //     if (/^MyBearer$/i.test(scheme)) { //<-- replace MyBearer by your own.
-    //       token = credentials;
-    //     }
-    //   }
-    // } else if (req.param('token')) {
-    //   token = req.param('token');
-    //   delete req.query.token;
-    // }
-
+    if (getCookie("sessionID", req.headers.cookie) !== "") {
+      token = JSON.parse(getCookie("sessionID", req.headers.cookie)).token;
+    }
+    console.log(token)
     return token;
   }
 
@@ -163,21 +155,21 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
   // verify JWT token and decrypt the payload.
   // Then search user from database with id equals to payload's username.
   // if user is found, then verify its roles
-  async verifyToken(
-    payload: Credentials,
-    done: (err: Error | null, user?: UserProfile | false, info?: Object) => void,
-  ) {
+  async verifyToken(payload: Credentials, done: (err: Error | null, user?: UserProfile | false, info?: Object) => void, ) {
+
+
     try {
 
 
       const { username } = payload;
-      const user = await this.userRepository.findById(username);
-
+      // console.log(payload);
+      const user: any = await this.userRepository.findOne({ where: { username: username } }) || await this.userRepository.findOne({ where: { email: username } });
+      const { id } = user;
       if (!user) done(null, false);
 
-      await this.verifyRoles(username);
+      await this.verifyRoles(id);
 
-      done(null, { name: username, email: user.email, id: username });
+      done(null, { name: username, id: username });
     } catch (err) {
       if (err.name === 'UnauthorizedError') done(null, false);
       done(err, false);
@@ -185,21 +177,20 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
   }
 
   // verify user's role based on the SecuredType
-  async verifyRoles(username: string) {
+  async verifyRoles(id: string) {
     const { type, roles } = this.metadata;
-
     if ([SecuredType.IS_AUTHENTICATED, SecuredType.PERMIT_ALL].includes(type)) return;
 
     if (type === SecuredType.HAS_ANY_ROLE) {
       if (!roles.length) return;
       const { count } = await this.userRoleRepository.count({
-        userId: username,
+        userId: id,
         roleId: { inq: roles },
       });
 
       if (count) return;
     } else if (type === SecuredType.HAS_ROLES && roles.length) {
-      const userRoles = await this.userRoleRepository.find({ where: { userId: username } });
+      const userRoles = await this.userRoleRepository.find({ where: { userId: id } });
       const roleIds = userRoles.map(ur => ur.roleId);
       let valid = true;
       for (const role of roles)
@@ -228,11 +219,11 @@ export class MyAuthActionProvider implements Provider<AuthenticateFn> {
   }
 
   async action(request: Request): Promise<UserProfile | undefined> {
-
     const metadata = await this.getMetadata();
     if (metadata && metadata.type === SecuredType.PERMIT_ALL) return;
 
     const strategy = await this.getStrategy();
+    // console.log(strategy)
     if (!strategy) return;
 
     // we will use Loopback's  StrategyAdapter so we can leverage passport's strategy

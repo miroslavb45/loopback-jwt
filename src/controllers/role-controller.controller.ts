@@ -16,20 +16,20 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {Role} from '../models';
-import {RoleRepository} from '../repositories';
+import { Role } from '../models';
+import { RoleRepository } from '../repositories';
 
 export class RoleControllerController {
   constructor(
     @repository(RoleRepository)
-    public roleRepository : RoleRepository,
-  ) {}
+    public roleRepository: RoleRepository,
+  ) { }
 
   @post('/roles', {
     responses: {
       '200': {
         description: 'Role model instance',
-        content: {'application/json': {schema: {'x-ts-type': Role}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Role } } },
       },
     },
   })
@@ -41,7 +41,7 @@ export class RoleControllerController {
     responses: {
       '200': {
         description: 'Role model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -57,7 +57,7 @@ export class RoleControllerController {
         description: 'Array of Role model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': Role}},
+            schema: { type: 'array', items: { 'x-ts-type': Role } },
           },
         },
       },
@@ -73,7 +73,7 @@ export class RoleControllerController {
     responses: {
       '200': {
         description: 'Role PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -88,7 +88,7 @@ export class RoleControllerController {
     responses: {
       '200': {
         description: 'Role model instance',
-        content: {'application/json': {schema: {'x-ts-type': Role}}},
+        content: { 'application/json': { schema: { 'x-ts-type': Role } } },
       },
     },
   })

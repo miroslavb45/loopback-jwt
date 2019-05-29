@@ -7,6 +7,7 @@ import * as fs from 'fs';
 export { AppApplication };
 
 export async function main(options: ApplicationConfig = {}) {
+
   const app = new AppApplication({
 
 	rest: {
@@ -15,21 +16,21 @@ export async function main(options: ApplicationConfig = {}) {
      	key: fs.readFileSync('/etc/letsencrypt/live/devdevdev.tk/privkey.pem'),
       	cert: fs.readFileSync('/etc/letsencrypt/live/devdevdev.tk/cert.pem'),   
  		cors: {
-        		origin: 'https://devdevdev.tk',
-        		methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-        		preflightContinue: false,
-        		optionsSuccessStatus: 204,
-        		maxAge: 86400,
-        		credentials: true,
+          origin: process.env.ORIGIN,
+          methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+          preflightContinue: false,
+          optionsSuccessStatus: 204,
+          maxAge: 86400,
+          credentials: true,
 
-      			}     
+        	} 
 	}  });
+
   await app.boot();
   await app.start();
 
   const url = app.restServer.url;
   console.log(`Server is running at ${url}`);
-  // console.log(`Try ${url}/ping`);
 
   return app;
 }
