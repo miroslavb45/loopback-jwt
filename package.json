@@ -30,8 +30,9 @@
     "docker:run": "docker run -p 3000:3000 -d app",
     "migrate": "node ./dist/migrate",
     "prestart": "npm run build",
+    "prepublishOnly": "npm run test",
     "start": "node .",
-    "prepublishOnly": "npm run test"
+    "start-prod": "NODE_ENV=production node ."
   },
   "repository": {
     "type": "git"
@@ -56,6 +57,9 @@
     "@loopback/rest": "^1.12.0",
     "@loopback/rest-explorer": "^1.1.23",
     "@loopback/service-proxy": "^1.1.11",
+    "custom-env": "^1.0.1",
+    "dotenv": "^8.0.0",
+    "if-env": "^1.0.4",
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0"

@@ -1,24 +1,23 @@
 {
   "ids": {
-    "User": 5,
-    "Role": 4,
-    "UserRole": 4
+    "User": 4,
+    "UserRole": 4,
+    "Role": 3
   },
   "models": {
     "User": {
-      "1": "{\"email\":\"asd\",\"password\":\"asd\",\"id\":1}",
-      "2": "{\"id\":2,\"email\":\"admin@te.st\",\"password\":\"hash-this\"}",
-      "3": "{\"id\":3,\"email\":\"admin2@te.st\",\"password\":\"hash-this\"}",
-      "4": "{\"email\":\"user@te.st\",\"password\":\"hash-this\",\"id\":4}"
+      "1": "{\"username\":\"admin\",\"password\":\"admin\",\"id\":1}",
+      "2": "{\"username\":\"user\",\"password\":\"user\",\"id\":2}",
+      "3": "{\"username\":\"user2\",\"password\":\"user2\",\"id\":3}"
+    },
+    "UserRole": {
+      "1": "{\"userId\":\"1\",\"roleId\":\"ADMIN\",\"id\":1}",
+      "2": "{\"userId\":\"2\",\"roleId\":\"USER\",\"id\":2}",
+      "3": "{\"userId\":\"3\",\"roleId\":\"USER\",\"id\":3}"
     },
     "Role": {
       "ADMIN": "{\"id\":\"ADMIN\",\"description\":\"admin\"}",
-      "ADMIN2": "{\"id\":\"ADMIN2\",\"description\":\"admin2\"}"
-    },
-    "UserRole": {
-      "1": "{\"userId\":\"2\",\"roleId\":\"ADMIN\",\"id\":1}",
-      "2": "{\"userId\":\"3\",\"roleId\":\"ADMIN\",\"id\":2}",
-      "3": "{\"userId\":\"4\",\"roleId\":\"ADMIN2\",\"id\":3}"
+      "USER": "{\"id\":\"USER\",\"description\":\"user\"}"
     }
   }
 }

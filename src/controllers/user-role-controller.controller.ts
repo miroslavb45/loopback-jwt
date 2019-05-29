@@ -16,22 +16,22 @@ import {
   del,
   requestBody,
 } from '@loopback/rest';
-import {UserRole} from '../models';
-import {UserRoleRepository} from '../repositories';
+import { UserRole } from '../models';
+import { UserRoleRepository } from '../repositories';
 import { secured, SecuredType } from '../auth';
 
 export class UserRoleControllerController {
   constructor(
     @repository(UserRoleRepository)
-    public userRoleRepository : UserRoleRepository,
-  ) {}
-  
- 
+    public userRoleRepository: UserRoleRepository,
+  ) { }
+
+
   @post('/user-roles', {
     responses: {
       '200': {
         description: 'UserRole model instance',
-        content: {'application/json': {schema: {'x-ts-type': UserRole}}},
+        content: { 'application/json': { schema: { 'x-ts-type': UserRole } } },
       },
     },
   })
@@ -43,7 +43,7 @@ export class UserRoleControllerController {
     responses: {
       '200': {
         description: 'UserRole model count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -53,14 +53,14 @@ export class UserRoleControllerController {
     return await this.userRoleRepository.count(where);
   }
 
-  @secured(SecuredType.HAS_ROLES, ['ADMIN']) 
+  @secured(SecuredType.HAS_ROLES, ['ADMIN'])
   @get('/user-roles', {
     responses: {
       '200': {
         description: 'Array of UserRole model instances',
         content: {
           'application/json': {
-            schema: {type: 'array', items: {'x-ts-type': UserRole}},
+            schema: { type: 'array', items: { 'x-ts-type': UserRole } },
           },
         },
       },
@@ -69,6 +69,7 @@ export class UserRoleControllerController {
   async find(
     @param.query.object('filter', getFilterSchemaFor(UserRole)) filter?: Filter,
   ): Promise<UserRole[]> {
+    console.log(filter);
     return await this.userRoleRepository.find(filter);
   }
 
@@ -76,7 +77,7 @@ export class UserRoleControllerController {
     responses: {
       '200': {
         description: 'UserRole PATCH success count',
-        content: {'application/json': {schema: CountSchema}},
+        content: { 'application/json': { schema: CountSchema } },
       },
     },
   })
@@ -91,7 +92,7 @@ export class UserRoleControllerController {
     responses: {
       '200': {
         description: 'UserRole model instance',
-        content: {'application/json': {schema: {'x-ts-type': UserRole}}},
+        content: { 'application/json': { schema: { 'x-ts-type': UserRole } } },
       },
     },
   })
