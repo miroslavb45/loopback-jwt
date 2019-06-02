@@ -24,7 +24,12 @@ export class UserController {
     },
   })
   async login(@requestBody() credentials: Credentials) {
-    const user = await this.userRepository.findOne({ where: { username: credentials.username } }) || await this.userRepository.findOne({ where: { email: credentials.username } });
+    let user;
+    if (credentials.username.indexOf('\@') > 0) {
+      user = await this.userRepository.findOne({ where: { email: credentials.username } });
+    } else {
+      user = await this.userRepository.findOne({ where: { username: credentials.username } });
+    }
 
     if (!user) throw new HttpErrors.Unauthorized('Invalid credentials');
     const isPasswordMatched = bcrypt.compareSync(credentials.password, user.password); // true
@@ -55,17 +60,13 @@ export class UserController {
   async register(@requestBody() credentials: Credentials) {
     const user = await this.userRepository.findOne({ where: { username: credentials.username } });
 
-
     if (user === null) {
       var hashedPassword = bcrypt.hashSync(credentials.password, 10);
 
-      let newUser: User = new User({ username: credentials.username, password: hashedPassword });
+      let newUser: User = new User({ username: credentials.username, password: hashedPassword, first_name: credentials.first_name, last_name: credentials.last_name, email: credentials.email });
       newUser = await this.userRepository.create(newUser);
       let newUserRole: UserRole = new UserRole({ userId: newUser.id, roleId: "USER" });
       this.userRoleRepository.create(newUserRole);
-
-
-
 
     } else {
       throw new HttpErrors.NotAcceptable('User already exists!');

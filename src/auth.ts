@@ -156,13 +156,8 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
   // Then search user from database with id equals to payload's username.
   // if user is found, then verify its roles
   async verifyToken(payload: Credentials, done: (err: Error | null, user?: UserProfile | false, info?: Object) => void, ) {
-
-
     try {
-
-
       const { username } = payload;
-      // console.log(payload);
       const user: any = await this.userRepository.findOne({ where: { username: username } }) || await this.userRepository.findOne({ where: { email: username } });
       const { id } = user;
       if (!user) done(null, false);
@@ -201,7 +196,6 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
 
       if (valid) return;
     }
-
     throw new HttpErrors.Unauthorized('Invalid authorization');
   }
 }

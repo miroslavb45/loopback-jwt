@@ -7,8 +7,7 @@ import * as fs from 'fs';
 export { AppApplication };
 
 export async function main(options: ApplicationConfig = {}) {
-
-  const app = new AppApplication({
+  let config: ApplicationConfig = {
 
     rest: {
       port: process.env.PORT,
@@ -23,7 +22,15 @@ export async function main(options: ApplicationConfig = {}) {
 
       }
     }
-  });
+  };
+
+  if (process.env.NODE_ENV === 'production') {
+    config.rest.protocol = 'https';
+    config.rest.key = fs.readFileSync('/etc/letsencrypt/live/devdevdev.tk/privkey.pem');
+    config.rest.cert = fs.readFileSync('/etc/letsencrypt/live/devdevdev.tk/cert.pem')
+  }
+
+  const app = new AppApplication(config);
 
   await app.boot();
   await app.start();
